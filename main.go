@@ -2,6 +2,7 @@ package maidwhiteclient
 
 import (
 	"context"
+	"fmt"
 	"golang.org/x/oauth2"
 	"io"
 	"net/http"
@@ -54,26 +55,37 @@ func (c *Client) SetRedirectURL(clientURL string) {
 	c.oauth2Config.RedirectURL = clientURL
 }
 
-func (c *Client) SetAccessToken(t string) {
-	c.accessToken = t
-}
-
 func (c *Client) AuthCodeURL(state string) string {
 	return c.oauth2Config.AuthCodeURL(state)
 	// oauth2.Config
 }
 
 func (c *Client) Exchange(ctx context.Context, code string) (*Token, error) {
+	if c == nil {
+		e := fmt.Errorf("client is nil")
+		return nil, e
+	}
 	t, err := c.oauth2Config.Exchange(ctx, code)
 	if t != nil {
 		c.client = c.oauth2Config.Client(ctx, t)
 	}
 	return &Token{Token: t}, err
 }
-func (c *Client) NewRequest(method, urlStr string, body io.ReadWriter) (*http.Request, error) {
+
+func (c *Client) SetAccessToken(accessToken string) {
+	ctx := context.Background()
+	c.accessToken = accessToken
+	t := &oauth2.Token{AccessToken: accessToken}
+	c.client = c.oauth2Config.Client(ctx, t)
+}
+
+func (c *Client) NewRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequest(method, BASE_URL+urlStr, body)
 	if err != nil {
 		return nil, err
+	}
+	if body != nil {
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	}
 
 	// req.Header.Add("Authorization", "Bearer "+c.client.Client.AccessToken)
