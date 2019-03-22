@@ -55,7 +55,7 @@ func LoadDriverInfo() {
 	// return nil
 }
 
-func GetScreenTypeByDriverName(driverName string) ScreenType{
+func GetScreenTypeByDriverName(driverName string) ScreenType {
 	return deviceInfoCache[driverName].ScreenType
 
 }
@@ -71,7 +71,18 @@ func RemoveHiddenDevice(list []*Device) []*Device {
 		}
 	}
 	return newList
+}
 
+func FilterThermostatList(list []*Device) []*Device {
+	newList := []*Device{}
+	for _, d := range list {
+		st := deviceInfoCache[d.DriverName].ScreenType
+		if st == SCREEN_TYPE_THERMOSTAT {
+			nd := d
+			newList = append(newList, nd)
+		}
+	}
+	return newList
 }
 
 type DeviceListResponse struct {
