@@ -127,7 +127,10 @@ func (c *Client) SendDeviceControlRequest(d *Device, cmd map[string]string) erro
 	}
 	resp, err := c.client.Do(req)
 	data, err := ioutil.ReadAll(resp.Body)
-	// fmt.Println("received:", string(data))
+
+	if Debug {
+		fmt.Println("received:", string(data))
+	}
 	// var v DeviceListResponse
 
 	// json.Unmarshal(data, &v)
