@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+var Debug = false
+
 type Client struct {
 	client       *http.Client
 	accessToken  string

@@ -97,7 +97,10 @@ func (c *Client) GetDevices() ([]*Device, error) {
 	}
 	resp, err := c.client.Do(req)
 	data, err := ioutil.ReadAll(resp.Body)
-	fmt.Println("received:", string(data))
+
+	if Debug {
+		fmt.Println("received:", string(data))
+	}
 	var v DeviceListResponse
 
 	json.Unmarshal(data, &v)
@@ -110,16 +113,21 @@ func (c *Client) SendDeviceControlRequest(d *Device, cmd map[string]string) erro
 	for k, v := range cmd {
 		u.Set(k, v)
 	}
-	log.Println("xxx", u.Encode())
+	if Debug {
+		log.Println("xxx", u.Encode())
+	}
 	req, err := c.NewRequest("POST", fmt.Sprintf("/devices/%d", d.Id), strings.NewReader(u.Encode()))
 	if err != nil {
 		return err
 	}
 	dump, _ := httputil.DumpRequest(req, true)
-	log.Println("req", string(dump))
+
+	if Debug {
+		log.Println("req", string(dump))
+	}
 	resp, err := c.client.Do(req)
 	data, err := ioutil.ReadAll(resp.Body)
-	fmt.Println("received:", string(data))
+	// fmt.Println("received:", string(data))
 	// var v DeviceListResponse
 
 	// json.Unmarshal(data, &v)
@@ -132,10 +140,14 @@ func (c *Client) SendDeviceQueryRequest(d *Device) (map[string]interface{}, erro
 		return nil, err
 	}
 	dump, _ := httputil.DumpRequest(req, true)
-	log.Println("req", string(dump))
+	if Debug {
+		log.Println("req", string(dump))
+	}
 	resp, err := c.client.Do(req)
 	data, err := ioutil.ReadAll(resp.Body)
-	fmt.Println("received:", string(data))
+	if Debug {
+		log.Println("received:", string(data))
+	}
 	response := map[string]interface{}{}
 	json.Unmarshal(data, &response)
 	// var v DeviceListResponse
